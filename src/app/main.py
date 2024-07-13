@@ -5,7 +5,7 @@ from app.auth.router import router as auth_router
 from app.user.router import router as user_router
 from app.config import settings
 from app.middlewares.exception import ExceptionHandlerMiddleware
-
+import os
 
 
 app = FastAPI(
