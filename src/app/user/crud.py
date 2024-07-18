@@ -1,16 +1,22 @@
-from typing import Any, Dict, Optional, Union
+
+from typing import Any, Dict, Optional, Union , List
 from fastapi.exceptions import HTTPException
 from pydantic import EmailStr
 from motor.core import AgnosticDatabase
 from bson import ObjectId
 import pprint
 
-from app.auth.security import get_password_hash, verify_password
+from app.auth.security import get_password_hash, verify_password_hash
 from app.db.base import CRUDBase
 from app.user.models import User
-from app.user.schemas import UserCreate, UserInDB, UserUpdate
+
+from app.user.schemas import UserCreate, UserInDB, UserUpdate , NicheId ,NicheResponse
 from app.auth.schemas import NewTOTP
 
+import datetime
+import json
+import bson
+from bson import json_util
 
 # ODM, Schema, Schema
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
@@ -58,7 +64,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         user = await self.get_by_email(db, email=email)
         if not user:
             return None
-        if not verify_password(
+        if not verify_password_hash(
             plain_password=password, hashed_password=user.hashed_password
         ):
             return None
