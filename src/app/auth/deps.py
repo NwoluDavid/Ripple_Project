@@ -12,7 +12,7 @@ from app.auth import crud as auth_crud
 from app.config import settings
 from app.deps import get_db
 
-reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/login/oauth")
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}auth/login/oauth")
 
 
 def get_token_payload(token: str) -> schemas.TokenPayload:
