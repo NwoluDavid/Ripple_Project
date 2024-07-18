@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Optional
 from datetime import datetime
 from pydantic import EmailStr
+from pydantic_extra_types.phone_numbers import PhoneNumber
 from odmantic import ObjectId, Field
 from typing import List
 
@@ -21,6 +22,9 @@ class User(Base):
     modified: datetime = Field(default_factory=datetime_now_sec)
     full_name: str = Field(default="")
     email: EmailStr
+    phone: Optional[PhoneNumber] = Field(default = None, description="user phone number")
+    date_of_birth:Optional[datetime] =Field(default = None) 
+    address: Optional[str]= Field(default=None)
     hashed_password: Any = Field(default=None)
     totp_secret: Any = Field(default=None)
     totp_counter: Optional[int] = Field(default=None)

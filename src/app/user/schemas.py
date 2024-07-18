@@ -10,6 +10,8 @@ from pydantic import (
     SecretStr,
     validator
 )
+from pydantic_extra_types.phone_numbers import PhoneNumber
+from datetime import datetime
 from odmantic import ObjectId
 
 from app.auth.exceptions import InvalidPasswordException
@@ -30,10 +32,12 @@ class UserLogin(BaseModel):
 # Shared properties
 class UserBase(BaseModel):
     email: EmailStr
+    phone: Optional[PhoneNumber] = Field(default = None, description="user phone number")
+    date_of_birth:Optional[datetime] =Field( None) 
+    address: Optional[str]= Field(None)
     email_validated: Optional[bool] = False
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
-    niches: str = []
     full_name: str = ""
     location_id: Optional[ObjectId] = Field(None)
 
@@ -102,17 +106,18 @@ class UserCreateReponse(BaseModel):
     status: int = 201
     message: str = "User Created Successfully"
     data: list = []
-
-class NicheId(BaseModel):
-    niches: List[str] = []
-    
-class NicheResponse(BaseModel):
-    id : str
-    name: str
     
 class UserData(BaseModel):
     email: EmailStr
-    email_validated: Optional[bool] = False
-    niches: list[str] = []
+    phone: Optional[PhoneNumber] = Field(default = None, description="user phone number")
+    date_of_birth:Optional[datetime] =Field( None) 
+    address: Optional[str]= Field(None)
+    full_name: str = ""
+    
+class UserUpdates(BaseModel):
+    email: EmailStr
+    phone: Optional[PhoneNumber] = Field(default = None, description="user phone number")
+    date_of_birth:Optional[datetime] =Field( None) 
+    address: Optional[str]= Field(None)
     full_name: str = ""
     
