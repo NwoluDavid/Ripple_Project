@@ -10,7 +10,7 @@ from app.auth.security import get_password_hash, verify_password_hash
 from app.db.base import CRUDBase
 from app.user.models import User
 
-from app.user.schemas import UserCreate, UserInDB, UserUpdate , NicheId ,NicheResponse
+from app.user.schemas import UserCreate, UserInDB, UserUpdate
 from app.auth.schemas import NewTOTP
 
 import datetime
