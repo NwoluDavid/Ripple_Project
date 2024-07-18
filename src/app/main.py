@@ -6,6 +6,7 @@ from app.user.router import router as user_router
 from app.config import settings
 from app.middlewares.exception import ExceptionHandlerMiddleware
 import os
+import uvicorn
 
 
 app = FastAPI(
