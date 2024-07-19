@@ -122,5 +122,35 @@ async def get_user(user:models.User = Depends(auth_deps.get_current_user)):
         )
     
 
+@router.patch("/update")
+async def update_user_detail(
+    update: schemas.UserUpdatas,
+    user:models.User =Depends(auth_deps.get_current_user),
+    db: AgnosticDatabase = Depends(deps.get_db),):
+    
+    """This route is to update the user details in the database"""
+    try:
+        user_updated = crud.user.update_user_detail(db, user, update)
+        user_updated = jsonable_encoder(user_updated)
+        return JSONResponse(
+                status_code=200,
+                content={
+                    "status": "Success",
+                    "message": "User details updated successfully",
+                    "data": user_updated,
+                },
+            )
+     
+    except Exception as e:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "status": "Error",
+                "message": f"{e}",
+                "data": None,
+            },
+        )
+    
+    
 
     

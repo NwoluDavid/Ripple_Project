@@ -12,6 +12,7 @@ from pydantic import (
 )
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from datetime import datetime
+from datetime import date
 from odmantic import ObjectId
 
 from app.auth.exceptions import InvalidPasswordException
@@ -33,7 +34,7 @@ class UserLogin(BaseModel):
 class UserBase(BaseModel):
     email: EmailStr
     phone: Optional[PhoneNumber] = Field(default = None, description="user phone number")
-    date_of_birth:Optional[datetime] =Field( None) 
+    date_of_birth:Optional[date] =Field( None) 
     address: Optional[str]= Field(None)
     email_validated: Optional[bool] = False
     is_active: Optional[bool] = True
@@ -114,10 +115,9 @@ class UserData(BaseModel):
     address: Optional[str]= Field(None)
     full_name: str = ""
     
-class UserUpdates(BaseModel):
-    email: EmailStr
-    phone: Optional[PhoneNumber] = Field(default = None, description="user phone number")
-    date_of_birth:Optional[datetime] =Field( None) 
+class UserUpdatas(BaseModel):
+    phone: Optional[PhoneNumber] = Field(default = None, description="user phone number" , example ="+23408103896322")
+    date_of_birth:Optional[datetime] =Field(default=None, description ="Add users date",) 
     address: Optional[str]= Field(None)
-    full_name: str = ""
+    full_name: Optional[str]=Field(default = " ", description ="Users Full name " , min_length= 8 , max_length =67)
     

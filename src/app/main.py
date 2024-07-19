@@ -31,7 +31,7 @@ if settings.BACKEND_CORS_ORIGINS:
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 
 #Add error  handling middleware
-app.add_middleware(ExceptionHandlerMiddleware)
+# app.add_middleware(ExceptionHandlerMiddleware)
 
 # Add Routers here from modules
 app.include_router(auth_router, prefix=settings.API_V1_STR)

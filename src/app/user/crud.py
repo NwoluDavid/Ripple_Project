@@ -9,8 +9,14 @@ import pprint
 from app.auth.security import get_password_hash, verify_password_hash
 from app.db.base import CRUDBase
 from app.user.models import User
+from datetime import date
 
-from app.user.schemas import UserCreate, UserInDB, UserUpdate
+from app.user.schemas import(
+    UserCreate,
+    UserInDB, UserUpdate,
+    UserUpdatas,
+    UserData)
+
 from app.auth.schemas import NewTOTP
 
 import datetime
@@ -122,5 +128,36 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def is_email_validated(user: User) -> bool:
         return user.email_validated
     
+    async def update_user_detail(self, db: AgnosticDatabase , user:User , update):
+        
+        """The functions updates the user detail in the db
+        using the usermodel"""
+        
+        user_collection =db.user
+        
+        document_to_update ={"_id":ObjectId(user.id)}
+        
+        update ={"$set":{
+            "phone": update.phone,
+            "date_of_birth": update.date_of_birth,
+            "address": update.address,
+            "full_name":update.full_name,
+        }}
+        
+        #document before
+        user=await user_collection.find_one(document_to_update)
+        
+        #updating user
+        updated_user = await user_collection.update_one(document_to_update, update)
+        # pprint.pprint(updated_user)
+        print(updated_user.matched_count)
+        
+        #geting updated user in db
+        user_update = await user_collection.find_one(document_to_update)
+        user_update =UserData(**user_update)
 
+        return user_update
+    
+    
+    
 user = CRUDUser(User)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Optional
 from datetime import datetime
+from datetime import date
 from pydantic import EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from odmantic import ObjectId, Field
