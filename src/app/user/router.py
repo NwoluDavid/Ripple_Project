@@ -7,6 +7,9 @@ from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from fastapi.responses import JSONResponse
 from motor.core import AgnosticDatabase
+from datetime import datetime
+from pydantic_extra_types.phone_numbers import PhoneNumber
+
 
 from app.user import crud, schemas
 from app.user import models
@@ -43,6 +46,11 @@ async def create_user_profile(
         description="Password must be exactly 8 characters long, contain at least one uppercase letter, one digit, and one special character.",
     ),
     email: EmailStr = Body(...),
+    full_name: str =Body(..., min_length =8 , max_length = 64),
+    date_of_birth : datetime =Body(...,example ="2024-07-19" , description = "users date of birth, remove the time component"),
+    phone: PhoneNumber =Body(..., example ="+2348103896322" , description ="user phone number in the form +2348103567322"),
+    address: str =Body(..., min_length =8)
+    
 ) -> Any:
     """
     Create/SignUp new user without the need to be logged in.
@@ -62,7 +70,14 @@ async def create_user_profile(
 
         # Create user auth
         user_in = schemas.UserCreate(
-            password=password, email=email, verification_pin=verification_pin
+            password=password,
+            email=email, 
+            verification_pin=verification_pin,
+            full_name =full_name,
+            date_of_birth =date_of_birth,
+            phone =phone,
+            address =address
+            
         )  # noqa
 
         email_data = EmailValidation(

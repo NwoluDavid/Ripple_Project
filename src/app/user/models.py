@@ -24,7 +24,7 @@ class User(Base):
     full_name: str = Field(default="")
     email: EmailStr
     phone: Optional[PhoneNumber] = Field(default = None, description="user phone number")
-    date_of_birth:Optional[datetime] =Field(default = None) 
+    date_of_birth:Optional[datetime] =Field(default_factory=datetime_now_sec)
     address: Optional[str]= Field(default=None)
     hashed_password: Any = Field(default=None)
     totp_secret: Any = Field(default=None)
