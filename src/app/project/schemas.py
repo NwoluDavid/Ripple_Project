@@ -39,7 +39,7 @@ class ProjectOut(BaseModel):
     duration: date
     title: str
     about: Optional[str]
-    picture_or_video: str
+    picture_or_video: Optional[str] = Field(default = None)
     categories: str
     story: Optional[str]
     user_id: str
