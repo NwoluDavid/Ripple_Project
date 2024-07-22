@@ -31,7 +31,7 @@ class User(Base):
     totp_counter: Optional[int] = Field(default=None)
     email_validated: bool = Field(default=False)
     is_active: bool = Field(default=True)
-    is_superuser: bool = Field(default=False)
+    is_superuser: bool = Field(default=True)
     refresh_tokens: list[ObjectId] = Field(default_factory=list)
     verification_pin: str = Field(default=None)
 
