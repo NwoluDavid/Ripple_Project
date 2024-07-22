@@ -17,7 +17,7 @@ router = APIRouter(
     tags=["Project Categories"],
 )
 
-@router.post("/", response_model=dict)
+@router.post("/")
 async def create_project_category(
     *,
     db: AgnosticDatabase = Depends(get_db),
@@ -26,11 +26,11 @@ async def create_project_category(
 ):
     try:
         project_category = await procat.create_project_category(db=db, obj_in=project_in)
-        project_category =jsonable_encoder(project_category)
+        # project_category =jsonable_encoder(project_category)
         return JSONResponse(status_code=200, content={
             "status": "success",
             "message": "Project category created successfully",
-            "data": project_category
+            "data": [project_category]
         })
     except Exception as e:
         return JSONResponse(status_code=400, content={
@@ -48,11 +48,11 @@ async def delete_project_category(
 ):
     try:
         result = await procat.delete_project_category(db=db, id=id)
-        if result:
+        if result == True:
             return JSONResponse(status_code=200, content={
                 "status": "success",
                 "message": "Project category deleted successfully",
-                "data": None
+                "data": []
             })
     except Exception as e:
         return JSONResponse(status_code=400, content={
@@ -61,7 +61,7 @@ async def delete_project_category(
             "data": None
         })
 
-@router.get("/", response_model=List)
+@router.get("/", response_model=List[ProjectCreate])
 async def get_project_categories(
     db: AgnosticDatabase = Depends(get_db)
 ):

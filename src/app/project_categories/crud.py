@@ -15,7 +15,7 @@ class CRUDProjectCate(CRUDBase[ProjectCategories, ProjectCreate, ProjectCateUpda
         pro_cat_collection = db.projectcategories
         db_obj = ProjectCategories(name=obj_in.name)
         result = await pro_cat_collection.insert_one(db_obj.dict())
-        return db_obj
+        return str(result.inserted_id)
 
     async def delete_project_category(self, db: AgnosticDatabase, id: str) -> None:
         pro_cat_collection = db.projectcategories
@@ -24,23 +24,22 @@ class CRUDProjectCate(CRUDBase[ProjectCategories, ProjectCreate, ProjectCateUpda
         pprint.pprint(db_obj)
         if not db_obj:
             raise HTTPException(status_code=404, detail="Project category not found")
-        result = await pro_cat_collection.delete_one(ObjectId(id))
-        return result
+        result = await pro_cat_collection.delete_one(document)
+        return result.acknowledged
         
 
     async def get_project_categories(self, db: AgnosticDatabase) -> List[ProjectCategories]:
         pro_cat_collection = db.projectcategories
         
-        result = pro_cat_collection.find()
-        
+        cursor = pro_cat_collection.find()
+        num_docs = 0
         categories = []
-        async for document in result:
+        async for document in cursor:
+            num_docs +=1
             document["id"] = document["_id"]
-            del[document["_id"]]
-            pprint.pprint(document)
-            # document =ProjectCategories(document)
             categories.append(ProjectCategories(**document))
-            return  categories
+        print("Number of documents: " + str(num_docs))
+        return  categories
         
 
 procat = CRUDProjectCate(ProjectCategories)
