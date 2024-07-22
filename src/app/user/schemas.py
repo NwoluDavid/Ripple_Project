@@ -38,7 +38,7 @@ class UserBase(BaseModel):
     address: Optional[str]= Field(None)
     email_validated: Optional[bool] = False
     is_active: Optional[bool] = True
-    is_superuser: Optional[bool] = False
+    is_superuser: Optional[bool] = True
     full_name: str = ""
     location_id: Optional[ObjectId] = Field(None)
 
