@@ -22,7 +22,7 @@ class Project(Base):
     duration: datetime=Field(default_factory=datetime_now_sec)
     title: str =Field(default = None, min_length =8)
     about:Optional[str] =Field(default = None, min_length =8)
-    picture_or_video: str
+    picture_or_video:Optional[str] =Field(default=None)
     categories: str
     story:Optional[str]=Field(default =None)
     user_id : ObjectId
