@@ -14,12 +14,12 @@ def datetime_now_sec():
 
 class Project(Base):
     name : str =Field(default = None, min_length =8)
-    address: str=Field(default = None , min_length =8)
+    address: str=Field(default = None)
     zipcode : Optional[int] =Field(default =None, gt =5)
     created: Optional[datetime] = Field(default_factory=datetime_now_sec)
     modified: Optional[datetime] = Field(default_factory=datetime_now_sec)
     amount: int
-    duration: datetime=Field(default_factory=datetime_now_sec)
+    duration:Optional[datetime]=Field(default_factory=datetime_now_sec)
     title: str =Field(default = None, min_length =8)
     about:Optional[str] =Field(default = None, min_length =8)
     picture_or_video:Optional[str] =Field(default=None)
