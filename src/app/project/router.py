@@ -3,7 +3,7 @@ import os
 from typing import List, Optional,Any, Union,Annotated
 from datetime import date
 from bson import ObjectId
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile,Form
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile,Form,Query
 from motor.core import AgnosticDatabase
 from fastapi.responses import JSONResponse,FileResponse
 from fastapi.encoders import jsonable_encoder
@@ -238,6 +238,28 @@ async def get_project_image(
             "status": "error",
             "message": e.detail,
             "data": None
+        })
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            "status": "error",
+            "message": str(e),
+            "data": None
+        })
+        
+
+@router.get("/filter/by-category", response_model=List[ProjectOut])
+async def filter_projects_by_category(
+    category: str = Query(..., description="Category to filter projects by"),
+    db: AgnosticDatabase = Depends(get_db),
+):
+    """Retrieve projects filtered by category"""
+    try:
+        projects = await proj.get_projects_by_category(db, category)
+        projects = jsonable_encoder(projects)
+        return JSONResponse(status_code=200, content={
+            "status": "success",
+            "message": "Projects filtered by category retrieved successfully",
+            "data": projects
         })
     except Exception as e:
         return JSONResponse(status_code=500, content={

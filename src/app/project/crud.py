@@ -45,14 +45,10 @@ class CRUDProject(CRUDBase[Project, ProjectCreate, ProjectUpdate]):
         async for document in result:
             num_doc +=1
             
-            pprint.pprint(document)
-            
             document["id"]=str(document["_id"])
             del[document["_id"]]
             
             document["user_id"]=str(document["user_id"])
-            
-            pprint.pprint(document)
             
             project_list.append(ProjectOut(**document))
         
@@ -85,10 +81,9 @@ class CRUDProject(CRUDBase[Project, ProjectCreate, ProjectUpdate]):
         return project_list
 
     async def update_project(self, db: AgnosticDatabase, user:User, project_id: str, project_in: ProjectUpdate) -> Project:
+        
         project_collection = db.project
         update_data = {k: v for k, v in project_in.dict().items() if v is not None}
-        
-        # update_data =project_in.dict()
         
         if not update_data:
             raise HTTPException(status_code=400, detail="No data provided for update")
@@ -101,9 +96,6 @@ class CRUDProject(CRUDBase[Project, ProjectCreate, ProjectUpdate]):
         if str(project["user_id"]) != str(user.id):
             
             raise HTTPException(status_code =400, detail ="this project does not belong to this user")
-        
-        # update_data =Project(**update_data)
-        # update_data =update_data.dict()
         
         await project_collection.update_one({"_id": ObjectId(project_id)}, {"$set": update_data})
         updated_project = await project_collection.find_one({"_id": ObjectId(project_id)})
@@ -132,6 +124,31 @@ class CRUDProject(CRUDBase[Project, ProjectCreate, ProjectUpdate]):
         if not project or not project.get("picture_or_video"):
             raise HTTPException(status_code=404, detail="Project or image not found")
         return project["picture_or_video"]
+
+
+    async def get_projects_by_category(self, db: AgnosticDatabase, category: str) -> List[ProjectOut]:
+        
+        
+        category_collection =db.projectcategories
+        project_collection = db.project
+
+        cat =category_collection.find_one(ObjectId(category))
+        
+        if not cat:
+            raise HTTPException(status_code =400, detail ="the category provided is not valid")
+        
+        result = project_collection.find({"categories": category})
+        project_list = []
+        async for document in result:
+            document["id"] = str(document["_id"])
+            del document["_id"]
+
+            document["user_id"] = str(document["user_id"])
+
+            project_list.append(ProjectOut(**document))
+
+        return project_list
+
 
 
 proj = CRUDProject(Project)
