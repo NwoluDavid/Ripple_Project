@@ -5,7 +5,7 @@ from datetime import date
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile,Form
 from motor.core import AgnosticDatabase
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse,FileResponse
 from fastapi.encoders import jsonable_encoder
 from app.auth.deps import get_current_active_user,get_current_active_superuser
 from app.user.models import User
@@ -13,7 +13,7 @@ from app.project.schemas import ProjectCreate, ProjectUpdate, ProjectOut
 from app.project.crud import proj
 from app.deps import get_db
 import pprint
-from app.project.models import Project
+from app.project.models import Project , datetime_now_sec
 
 
 router = APIRouter(
@@ -30,7 +30,7 @@ async def create_project(
     address: str =Form(...),
     zipcode:Optional[int] = Form(None),
     amount: int= Form(...), 
-    duration: date =Form(...),
+    duration:Optional[date] =Form(default=datetime_now_sec),
     title: str =Form(...),
     about: Optional[str] =Form(None),
     categories: str  = Form(...),
@@ -62,13 +62,21 @@ async def create_project(
         
         print(project_in)
         
-        project = await proj.create_project(db,user,project_in, picture_bytes)
-        project =jsonable_encoder(project)
+        project_id= await proj.create_project(db,user,project_in, picture_bytes)
+        project_id=jsonable_encoder(project_id)
         return JSONResponse(status_code=200, content={
             "status": "success",
-            "message": "Project created successfully",
-            "data": project
+            "message": "Project with the below id was created successfully",
+            "data": project_id
         })
+        
+    except HTTPException as e:
+        return JSONResponse(status_code=e.status_code, content={
+            "status": "error",
+            "message": e.detail,
+            "data": None
+        })
+        
     except Exception as e:
         return JSONResponse(status_code=400, content={
             "status": "error",
@@ -91,6 +99,13 @@ async def list_projects(
             "message": "Projects retrieved successfully",
             "data": projects
         })
+    except HTTPException as e:
+        return JSONResponse(status_code=e.status_code, content={
+            "status": "error",
+            "message": e.detail,
+            "data": None
+        })
+        
     except Exception as e:
         return JSONResponse(status_code=500, content={
             "status": "error",
@@ -112,7 +127,12 @@ async def read_project(
             "message": "Project retrieved successfully",
             "data": project
         })
-    
+    except HTTPException as e:
+        return JSONResponse(status_code=e.status_code, content={
+            "status": "error",
+            "message": e.detail,
+            "data": None
+        })
     except Exception as e:
         return JSONResponse(status_code=400, content={
             "status": "error",
@@ -174,3 +194,54 @@ async def delete_project(
             "data": None
         })
 
+
+@router.get("/user/project", response_model=List[ProjectOut])
+async def get_user_projects(
+    db: AgnosticDatabase = Depends(get_db),
+    user: User = Depends(get_current_active_user)
+):
+    """Retrieve projects created by the current user"""
+    try:
+        user_projects = await proj.get_projects_by_user(db, user.id)
+        user_projects = jsonable_encoder(user_projects)
+        return JSONResponse(status_code=200, content={
+            "status": "success",
+            "message": "User projects retrieved successfully",
+            "data": user_projects
+        })
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            "status": "error",
+            "message": str(e),
+            "data": None
+        })
+
+
+@router.get("/image_or_video/{project_id}")
+async def get_project_image(
+    project_id: str,
+    db: AgnosticDatabase = Depends(get_db)
+):
+    """Retrieve the image or video of a project by project ID, 
+    provide the project id , in the route to receive the image or video"""
+    try:
+        image_path = await proj.get_project_image_path(db, project_id)
+        if not os.path.exists(image_path):
+            return JSONResponse(status_code=404, content={
+                "status": "error",
+                "message": "Image not found",
+                "data": None
+            })
+        return FileResponse(image_path)
+    except HTTPException as e:
+        return JSONResponse(status_code=e.status_code, content={
+            "status": "error",
+            "message": e.detail,
+            "data": None
+        })
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            "status": "error",
+            "message": str(e),
+            "data": None
+        })

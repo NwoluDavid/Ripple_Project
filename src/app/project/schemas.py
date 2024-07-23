@@ -5,12 +5,19 @@ from odmantic import ObjectId
 from datetime import datetime , date
 from typing import Optional
 
+
+
+def datetime_now_sec():
+    return datetime.now().replace(microsecond=0)
+
+
+
 class ProjectCreate(BaseModel):
     name: str = Field(default =None , description = "The name of user creating the project",example ="JohnDoe", min_length =8, max_length =64)
-    address: str =Field(default =None , description = "The addres of the user",example ="Lagos,Nigeria", min_length =8, max_length =64)
+    address: str =Field(default =None , description = "The addres of the user",example ="Lagos,Nigeria",max_length =1000)
     zipcode: Optional[int] =Field(default =None , description ="provide the zip code of the user" , example ="40213", gt=5)
     amount: int=Field(default =None , description ="the user provides the amount he/she wants to raise" , example ="10000",)
-    duration: date
+    duration: Optional[datetime] =Field(default_factory=datetime_now_sec)
     title: str=Field(default =None , description = "The user states the title of the project",example ="Electric Motor", min_length =8, max_length =64)
     about: Optional[str]=Field(default =None , description = "The user states what their kickstarted is about",example ="JohnDoe", min_length =8, max_length =600)
     # photo_or_video: Optional[str] =Field(default =None , description = "The name of the video or image file provided by the user",example ="JohnDoe.jpg", min_length =8, max_length =64)
@@ -32,11 +39,11 @@ class ProjectOut(BaseModel):
     id: str
     name: str
     address: str
-    zipcode:Optional[int]
+    zipcode:Optional[int] =None
     created: datetime
     modified: datetime
     amount: int
-    duration: date
+    duration: Optional[datetime]=Field(default_factory=datetime_now_sec)
     title: str
     about: Optional[str]
     picture_or_video: Optional[str] = Field(default = None)
