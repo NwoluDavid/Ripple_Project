@@ -27,6 +27,7 @@ class ProjectCreate(BaseModel):
 class ProjectUpdate(BaseModel):
     name: Optional[str] = None
     address: Optional[str] = None
+    state: Optional[str]=None
     zipcode: Optional[int] = None
     amount: Optional[int] = None
     duration: Optional[datetime] = None
@@ -39,6 +40,7 @@ class ProjectOut(BaseModel):
     id: str
     name: str
     address: str
+    state: str
     zipcode:Optional[int] =None
     created: datetime
     modified: datetime
