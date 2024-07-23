@@ -28,6 +28,7 @@ async def create_project(
     *,
     name: str =Form(...),
     address: str =Form(...),
+    state: str =Form(None),
     zipcode:Optional[int] = Form(None),
     amount: int= Form(...), 
     duration:Optional[date] =Form(default=datetime_now_sec),
@@ -49,6 +50,7 @@ async def create_project(
         project_in= Project(
             name = name,
             address = address,
+            state = state,
             zipcode= zipcode,
             amount= amount, 
             duration = duration,
