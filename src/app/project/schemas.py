@@ -39,16 +39,16 @@ class ProjectUpdate(BaseModel):
 class ProjectOut(BaseModel):
     id: str
     name: str
-    address: str
-    state: str
+    address: Optional[str] = Field(default = None)
+    state: Optional[str] = Field(default = None)
     zipcode:Optional[int] =None
     created: datetime
     modified: datetime
     amount: int
     duration: Optional[datetime]=Field(default_factory=datetime_now_sec)
-    title: str
-    about: Optional[str]
+    title: Optional[str] = Field(default = None)
+    about: Optional[str] = Field(default = None)
     picture_or_video: Optional[str] = Field(default = None)
-    categories: str
-    story: Optional[str]
-    user_id: str
+    categories: Optional[str] = Field(default = None)
+    story: Optional[str] = Field(default = None)
+    user_id: Optional[str] = Field(default = None)
