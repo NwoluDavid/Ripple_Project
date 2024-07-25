@@ -65,6 +65,17 @@ class CRUDProject(CRUDBase[Project, ProjectCreate, ProjectUpdate]):
         del[project["_id"]]
         return Project(**project)
     
+
+    async def get_project_without_user(self, db: AgnosticDatabase, project_id: str) -> Project:
+        project_collection = db.project
+        project = await project_collection.find_one({"_id": ObjectId(project_id)})
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+        project["id"]=project["_id"]
+        del[project["_id"]]
+        return Project(**project)
+    
+    
     async def get_projects_by_user(self, db: AgnosticDatabase, user_id: str) -> List[ProjectOut]:
         project_collection = db.project
 
