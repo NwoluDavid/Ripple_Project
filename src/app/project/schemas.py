@@ -48,7 +48,7 @@ class ProjectOut(BaseModel):
     duration: Optional[datetime]=Field(default_factory=datetime_now_sec)
     title: Optional[str] = Field(default = None)
     about: Optional[str] = Field(default = None)
-    picture_or_video: Optional[str] = Field(default = None)
+    picture_or_video: Optional[str]= Field(default = None)
     categories: Optional[str] = Field(default = None)
     story: Optional[str] = Field(default = None)
     user_id: Optional[str] = Field(default = None)
