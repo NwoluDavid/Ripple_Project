@@ -219,6 +219,32 @@ async def get_user_projects(
         })
 
 
+@router.get("/projects/{project_id}", response_model=List[ProjectOut])
+async def get_user_projects(
+    project_id =str,
+    db: AgnosticDatabase = Depends(get_db),
+):
+    """Retrieve project with the project_id without , authorising a user,
+    this route give you a project when provided with the project it"""
+    
+    try:
+        project = await proj.get_project_without_user(db, project_id)
+        project = jsonable_encoder(project)
+        return JSONResponse(status_code=200, content={
+            "status": "success",
+            "message": "Project retrieved successfully",
+            "data": project
+        })
+
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            "status": "error",
+            "message": str(e),
+            "data": None
+        })
+
+
+
 @router.get("/image_or_video/{project_id}")
 async def get_project_image(
     project_id: str,
