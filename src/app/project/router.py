@@ -66,7 +66,7 @@ async def create_project(
         
         project_id= await proj.create_project(db,user,project_in, picture_bytes)
         project_id=jsonable_encoder(project_id)
-        return JSONResponse(status_code=200, content={
+        return JSONResponse(status_code=201, content={
             "status": "success",
             "message": "Project with the below id was created successfully",
             "data": project_id
@@ -219,13 +219,112 @@ async def get_user_projects(
         })
 
 
-@router.get("/projects/{project_id}", response_model=List[ProjectOut])
+@router.put("/project/update_about")
+async def update_about_project(
+    project_id: str = Query(description="the project ID", max_length=24),
+    about: str = Annotated[str | None, Query(description="update for the about field",max_length=2000)],
+    user:User =Depends(get_current_active_user),
+    db: AgnosticDatabase=Depends(get_db)
+):
+    
+    try:
+        project = await proj.update_about(db,project_id,about)
+        project =jsonable_encoder(project)
+        return JSONResponse(status_code=200, content={
+                "status": "success",
+                "message": "Projects about filed updated successfully retrieved successfully",
+                "data": project
+            })
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            "status": "error",
+            "message": str(e),
+            "data": None
+        }) 
+
+
+
+@router.put("/project/update_story")
+async def update_about_project(
+    project_id: str = Query(description="the project ID", max_length=24),
+    story: str = Annotated[str | None, Query(description="update for the about field",max_length=2000)],
+    user:User =Depends(get_current_active_user),
+    db: AgnosticDatabase=Depends(get_db)
+):
+    
+    try:
+        project = await proj.update_story(db,project_id,story)
+        project =jsonable_encoder(project)
+        return JSONResponse(status_code=200, content={
+                "status": "success",
+                "message": "Projects about filed updated successfully retrieved successfully",
+                "data": project
+            })
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            "status": "error",
+            "message": str(e),
+            "data": None
+        }) 
+
+
+@router.put("/project/update_category")
+async def update_project_catagory(
+    project_id: str = Query(description="the project ID", max_length=24),
+    category_id: str =Query(description="the category id", max_length=24),
+    # user:User =Depends(get_current_active_user),
+    db: AgnosticDatabase=Depends(get_db)
+):
+    """This route updates the category field of a project, 
+    obtain the category id from the project category route
+    , use the id to update the category a project created"""
+    
+    try:
+        project = await proj.update_project_category(db,project_id,category_id)
+        project =jsonable_encoder(project)
+        return JSONResponse(status_code=200, content={
+                "status": "success",
+                "message": "Projects about filed updated successfully retrieved successfully",
+                "data": project
+            })
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            "status": "error",
+            "message": str(e),
+            "data": None
+        }) 
+
+
+    pass
+
+@router.get("/filter/category", response_model=List[ProjectOut])
+async def filter_projects_by_category(
+    category: str = Query(..., description="Category to filter projects by"),
+    db: AgnosticDatabase = Depends(get_db),
+):
+    """Retrieve projects filtered by category"""
+    try:
+        projects = await proj.get_projects_by_category(db, category)
+        projects = jsonable_encoder(projects)
+        return JSONResponse(status_code=200, content={
+            "status": "success",
+            "message": "Projects filtered by category retrieved successfully",
+            "data": projects
+        })
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            "status": "error",
+            "message": str(e),
+            "data": None
+        })                                                                                                            
+
+@router.get("/project/{project_id}", response_model=List[ProjectOut])
 async def get_user_projects(
     project_id =str,
     db: AgnosticDatabase = Depends(get_db),
 ):
     """Retrieve project with the project_id without , authorising a user,
-    this route give you a project when provided with the project it"""
+    this route give you a project when provided with the project id"""
     
     try:
         project = await proj.get_project_without_user(db, project_id)
@@ -242,7 +341,6 @@ async def get_user_projects(
             "message": str(e),
             "data": None
         })
-
 
 
 @router.get("/image_or_video/{project_id}")
@@ -266,28 +364,6 @@ async def get_project_image(
             "status": "error",
             "message": e.detail,
             "data": None
-        })
-    except Exception as e:
-        return JSONResponse(status_code=500, content={
-            "status": "error",
-            "message": str(e),
-            "data": None
-        })
-        
-
-@router.get("/filter/by-category", response_model=List[ProjectOut])
-async def filter_projects_by_category(
-    category: str = Query(..., description="Category to filter projects by"),
-    db: AgnosticDatabase = Depends(get_db),
-):
-    """Retrieve projects filtered by category"""
-    try:
-        projects = await proj.get_projects_by_category(db, category)
-        projects = jsonable_encoder(projects)
-        return JSONResponse(status_code=200, content={
-            "status": "success",
-            "message": "Projects filtered by category retrieved successfully",
-            "data": projects
         })
     except Exception as e:
         return JSONResponse(status_code=500, content={
