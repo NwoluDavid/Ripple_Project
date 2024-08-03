@@ -318,7 +318,7 @@ async def filter_projects_by_category(
             "data": None
         })                                                                                                            
 
-@router.get("/project/{project_id}", response_model=List[ProjectOut])
+@router.get("/project/{project_id}", response_model=ProjectOut)
 async def get_user_projects(
     project_id =str,
     db: AgnosticDatabase = Depends(get_db),
