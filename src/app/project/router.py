@@ -222,7 +222,7 @@ async def get_user_projects(
 @router.put("/project/update_about")
 async def update_about_project(
     project_id: str = Query(description="the project ID", max_length=24),
-    about: str = Annotated[str | None, Query(description="update for the about field",max_length=2000)],
+    about: str = Query(description="update for the about field",max_length=2000),
     user:User =Depends(get_current_active_user),
     db: AgnosticDatabase=Depends(get_db)
 ):
@@ -247,7 +247,7 @@ async def update_about_project(
 @router.put("/project/update_story")
 async def update_about_project(
     project_id: str = Query(description="the project ID", max_length=24),
-    story: str = Annotated[str | None, Query(description="update for the about field",max_length=2000)],
+    story: str = Query(description="update for the about field",max_length=2000),
     user:User =Depends(get_current_active_user),
     db: AgnosticDatabase=Depends(get_db)
 ):
@@ -293,9 +293,6 @@ async def update_project_catagory(
             "message": str(e),
             "data": None
         }) 
-
-
-    pass
 
 @router.get("/filter/category", response_model=List[ProjectOut])
 async def filter_projects_by_category(
