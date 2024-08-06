@@ -8,7 +8,7 @@ from app.config import settings
 import hmac
 import hashlib
 import json
-from app.auth.deps import get_current_active_superuser
+from app.auth.deps import get_current_active_superuser,get_current_user
 from app.payment.schemas import PaymentCreate
 from app.payment.models import Payment
 from app.user.models import User
@@ -45,8 +45,11 @@ async def get_payments(
 
 
 @router.post("/initialize-payment/")
-async def initialize_payment(paymentin: PaymentCreate, db:AgnosticDatabase=Depends(get_db)):
+async def initialize_payment(paymentin: PaymentCreate,user:User=Depends(get_current_user) ,db:AgnosticDatabase=Depends(get_db)):
     try:
+        if user.email !=paymentin.email:
+            raise HTTPException(status_code =400 , detail="this user is not registered")
+        
         unique_reference = f"{paymentin.project_id}-{uuid.uuid4()}"
         
         url = f"{settings.PAYSTACK_BASE_URL}/transaction/initialize"
@@ -80,7 +83,7 @@ async def initialize_payment(paymentin: PaymentCreate, db:AgnosticDatabase=Depen
         return response.json()  # The response contains the authorization URL
 
     except Exception as e:
-        return JSONResponse(status_code=500, content={
+        return JSONResponse(status_code=400, content={
             "status": "error",
             "message": str(e),
             "data": None
@@ -159,7 +162,7 @@ async def paystack_webhook(request: Request, db: AgnosticDatabase = Depends(get_
         
         return {"status": "ignored"}
     except Exception as e:
-        return JSONResponse(status_code=500, content={
+        return JSONResponse(status_code=400, content={
             "status": "error",
             "message": str(e),
             "data": None
