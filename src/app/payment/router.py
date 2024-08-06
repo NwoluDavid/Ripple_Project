@@ -128,40 +128,39 @@ async def verify_transaction(reference: str , db:AgnosticDatabase=Depends(get_db
 
 @router.post("/webhook/")
 async def paystack_webhook(request: Request, db: AgnosticDatabase = Depends(get_db)):
-    payload = await request.body()
-    signature = request.headers.get("x-paystack-signature")
-
-    # Log the received payload and signature
-    print("Received payload:", payload)
-    print("Received signature:", signature)
-    
-    # Verify the webhook signature
-    expected_signature = hmac.new(
-        bytes(settings.PAYSTACK_SECRET_KEY, 'utf-8'),
-        msg=payload,
-        digestmod=hashlib.sha512
-    ).hexdigest()
-    
-    # Log the expected signature
-    print("Expected signature:", expected_signature)
-    
-    if signature != expected_signature:
-        raise HTTPException(status_code=400, detail="Invalid signature")
-    
-    event = json.loads(payload)
-    
-    if event['event'] == 'charge.success':
-        transaction_reference = event['data']['reference']
-        user_email = event['data']['customer']['email']
-        amount = event['data']['amount'] // 100  # Amount is in kobo
+    try:
+        payload = await request.body()
+        signature = request.headers.get("x-paystack-signature")
         
-        # Extract project ID from reference
-        project_id = transaction_reference.split('-')[0]
-        print(project_id)
+        # Verify the webhook signature
+        expected_signature = hmac.new(
+            bytes(settings.PAYSTACK_SECRET_KEY, 'utf-8'),
+            msg=payload,
+            digestmod=hashlib.sha512
+        ).hexdigest()
         
-        await payment.update_user_with_project(db, user_email, project_id)
-        await payment.update_project_with_backer(db, project_id, user_email, amount)
+        if signature != expected_signature:
+            raise HTTPException(status_code=400, detail="Invalid signature")
         
-        return {"status": "success"}
-    
-    return {"status": "ignored"}
+        event = json.loads(payload)
+        
+        if event['event'] == 'charge.success':
+            transaction_reference = event['data']['reference']
+            user_email = event['data']['customer']['email']
+            amount = event['data']['amount'] // 100  # Amount is in kobo
+            
+            # Extract project ID from reference
+            project_id = transaction_reference.split('-')[0]
+            
+            await payment.update_user_with_project(db, user_email, project_id)
+            await payment.update_project_with_backer(db, project_id, user_email, amount)
+            
+            return {"status": "success"}
+        
+        return {"status": "ignored"}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            "status": "error",
+            "message": str(e),
+            "data": None
+        }) 
