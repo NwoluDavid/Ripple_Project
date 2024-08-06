@@ -14,10 +14,19 @@ from app.config import settings
 
 class CRUDPayment(CRUDBase[Payment, PaymentCreate, PaymentUpdate]):
     
-    
-    async def save_payment(self, db: AgnosticDatabase, payment_data: dict) -> Payment:
+    async def get_all_payments(self, db: AgnosticDatabase) ->List[ Payment]:
+        payment_collection =db.payment
+        result = payment_collection.find()
+        payments=[]
+        async for document in result:
+            document["id"]=str(document["_id"])
+            del[document["_id"]]
+            payments.append(Payment(**document))
+        return payments
+          
+    async def save_payment(self, db: AgnosticDatabase, payment_data: Payment) -> Payment:
         payment_collection = db.payment
-        payment = Payment(**payment_data)
+        payment = payment_data.dict()
         await payment_collection.insert_one(payment)
         return payment
 
@@ -29,17 +38,20 @@ class CRUDPayment(CRUDBase[Payment, PaymentCreate, PaymentUpdate]):
             document ={"_id":ObjectId(user.id)}
             update ={"project_backed":ObjectId(project_id)}
             result = await user_collection.update_one(document,update)
+            print(result.modified_count)
         return result.modified_count
             
     async def update_project_with_backer(self,db:AgnosticDatabase, project_id: str, user_email: str, amount: int):
         project_collection = db.project
         project = await project_collection.find_one({"_id":ObjectId(project_id)})
         if project:
+            
             document ={"_id":ObjectId(project_id)}
             backer =Backers(backer=user_email, amount =amount)
             backer =backer.dict()
             update = {"$push":{"backers":backer}}
             result = await project_collection.update_one(document,update)
+            print(result.modified_count)
         return result.modified_count
            
 payment =CRUDPayment(Payment)

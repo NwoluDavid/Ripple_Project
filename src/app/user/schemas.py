@@ -41,8 +41,7 @@ class UserBase(BaseModel):
     is_superuser: Optional[bool] = True
     full_name: str = ""
     location_id: Optional[ObjectId] = Field(None)
-    project_backed: Optional[ObjectId] = Field(None)
-
+    project_backed: List[ObjectId] = Field(default_factory=list)
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
