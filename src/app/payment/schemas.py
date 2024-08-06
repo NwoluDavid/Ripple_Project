@@ -4,6 +4,8 @@ from odmantic import ObjectId
 from typing import Optional
 
 class PaymentCreate(BaseModel):
+    first_name:str
+    last_name: str
     email :EmailStr
     amount : int
     project_id: str = Field(description="Project ID")
@@ -14,6 +16,8 @@ class PaymentIn(PaymentCreate):
    
 
 class PaymentUpdate(BaseModel):
+    first_name:str
+    last_name: str
     email :EmailStr
     amount : int
     project_id: str = Field(description="Project ID")
