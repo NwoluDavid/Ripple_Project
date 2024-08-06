@@ -13,7 +13,7 @@ def datetime_now_sec():
     return datetime.now().replace(microsecond=0)
 
 class Backers(Model):
-    backer_name:str =Field(default = None)
+    backer_name:str =Field(default ="")
     backer: EmailStr
     amount:int
 
