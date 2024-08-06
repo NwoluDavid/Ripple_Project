@@ -35,8 +35,8 @@ class CRUDPayment(CRUDBase[Payment, PaymentCreate, PaymentUpdate]):
         user_collection =db.user
         user = await user_collection.find_one({"email":user_email})
         if user:
-            document ={"_id":ObjectId(user.id)}
-            update ={"project_backed":ObjectId(project_id)}
+            document ={"_id":ObjectId(user["_id"])}
+            update ={"$push":{"project_backed":ObjectId(project_id)}}
             result = await user_collection.update_one(document,update)
             print(result.modified_count)
         return result.modified_count

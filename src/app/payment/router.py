@@ -33,7 +33,7 @@ async def get_payments(
         payments_data =jsonable_encoder(payments_data)
         return JSONResponse(status_code=200, content={
             "status": "success",
-            "message": "Project updated successfully",
+            "message": "payments data retrived successfully",
             "data": payments_data
         })
     except Exception as e:
@@ -100,7 +100,7 @@ async def verify_transaction(reference: str , db:AgnosticDatabase=Depends(get_db
         
         # return response.json()
 
-        if event['data']["status"] == True:
+        if event['data']["status"] =="success":
             transaction_reference = event['data']['reference']
             user_email = event['data']['customer']['email']
             amount = event['data']['amount'] // 100  # Amount is in kobo
@@ -112,10 +112,13 @@ async def verify_transaction(reference: str , db:AgnosticDatabase=Depends(get_db
             await payment.update_user_with_project(db, user_email, project_id)
             await payment.update_project_with_backer(db, project_id, user_email, amount)
             return {"status": "success"}
-        return {"status": "success"}
+        else:
+            raise HTTPException(status_code=400, detials ="this transaction was not successful")
     except Exception as e:
         return JSONResponse(status_code=500, content={
             "status": "error",
             "message": str(e),
             "data": None
         }) 
+        
+    
