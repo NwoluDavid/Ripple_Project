@@ -157,13 +157,8 @@ async def paystack_webhook(request: Request, db: AgnosticDatabase = Depends(get_
         
         # Extract project ID from reference
         project_id = transaction_reference.split('-')[0]
+        print(project_id)
         
-        payment_data = {
-            "email": user_email,
-            "amount": amount,
-            "reference": transaction_reference,
-            "project_id": project_id
-        }
         await payment.update_user_with_project(db, user_email, project_id)
         await payment.update_project_with_backer(db, project_id, user_email, amount)
         
