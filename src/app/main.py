@@ -5,6 +5,7 @@ from app.auth.router import router as auth_router
 from app.user.router import router as user_router
 from app.project_categories.router import router as procat_router
 from app.project.router import router as project_router
+from app.payment.router import router as payment_router
 from app.config import settings
 from app.middlewares.exception import ExceptionHandlerMiddleware
 import os
@@ -51,6 +52,7 @@ app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(user_router, prefix=settings.API_V1_STR)
 app.include_router(procat_router, prefix=settings.API_V1_STR)
 app.include_router(project_router, prefix=settings.API_V1_STR)
+app.include_router(payment_router, prefix=settings.API_V1_STR)
 
 
 if __name__ == "__main__":

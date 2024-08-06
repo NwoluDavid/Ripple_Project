@@ -124,5 +124,8 @@ class Settings(BaseSettings):
     AWS_S3_BUCKET_NAME : str
     
     YOUR_GOOGLE_MAPS_API_KEY: str
+    
+    PAYSTACK_SECRET_KEY: str
+    PAYSTACK_BASE_URL : str
 
 settings = Settings()  # type: ignore

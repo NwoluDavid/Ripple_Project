@@ -1,14 +1,18 @@
 # file: schemas.py
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field,EmailStr
 from odmantic import ObjectId
 from datetime import datetime , date
-from typing import Optional
+from typing import Optional,List
 
 
 
 def datetime_now_sec():
     return datetime.now().replace(microsecond=0)
+
+class Backers(BaseModel):
+    backers: EmailStr
+    amount:int
 
 
 
@@ -23,6 +27,10 @@ class ProjectCreate(BaseModel):
     # photo_or_video: Optional[str] =Field(default =None , description = "The name of the video or image file provided by the user",example ="JohnDoe.jpg", min_length =8, max_length =64)
     categories: str=Field(default =None , description = "The user add the categories of his/her project",example ="Design $ tech", max_length =24)
     story: Optional[str]=Field(default =None , description = "user shares the story of the project",example ="user story", min_length =8, max_length =1000)
+    backers:List[Backers] =Field(default_factory =list)
+
+class Projectin(ProjectCreate):
+    id: Optional[ObjectId]=None
 
 class ProjectUpdate(BaseModel):
     name: Optional[str] = None
