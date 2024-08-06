@@ -11,6 +11,8 @@ from app.db.base_class import Base
 
 
 class Payment(Base):
+    first_name:str
+    last_name: str
     email: EmailStr
     amount: int
     reference: str = Field(description="Unique reference ID")
