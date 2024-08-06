@@ -6,16 +6,18 @@ from typing import Optional
 class PaymentCreate(BaseModel):
     email :EmailStr
     amount : int
-    reference: str =Field(default = None , description= "project id")
+    project_id: str = Field(description="Project ID")
     
 class PaymentIn(PaymentCreate):
-   id: Optional[ObjectId] = None 
+    id: Optional[ObjectId] = None 
+    reference: str = Field(description="Unique reference ID")
    
 
 class PaymentUpdate(BaseModel):
     email :EmailStr
     amount : int
-    reference: str =Field(default = None , description= "project id")
+    project_id: str = Field(description="Project ID")
 
-class PaymentUp(PaymentUpdate):
+class PaymentIn(PaymentCreate):
     id: Optional[ObjectId] = None 
+    reference: str = Field(description="Unique reference ID")

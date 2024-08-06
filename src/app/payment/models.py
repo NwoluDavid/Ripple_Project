@@ -11,6 +11,7 @@ from app.db.base_class import Base
 
 
 class Payment(Base):
-    email :EmailStr
+    email: EmailStr
     amount: int
-    reference: str =Field(default = None , description= "project id")
+    reference: str = Field(description="Unique reference ID")
+    project_id: str = Field(description="Project ID")

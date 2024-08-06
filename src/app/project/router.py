@@ -88,7 +88,7 @@ async def create_project(
         
 
 
-@router.get("/", response_model=List[ProjectOut])
+@router.get("/", response_model=List[Project])
 async def list_projects(
     db: AgnosticDatabase = Depends(get_db),
 ):
