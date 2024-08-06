@@ -4,13 +4,17 @@ from datetime import datetime
 from datetime import date
 from pydantic import EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
-from odmantic import ObjectId, Field
+from odmantic import ObjectId, Field, Model
 from typing import List,Optional
 
 from app.db.base_class import Base
 
 def datetime_now_sec():
     return datetime.now().replace(microsecond=0)
+
+class Backers(Model):
+    backer: EmailStr
+    amount:int
 
 class Project(Base):
     name : str =Field(default = None, min_length =8)
@@ -27,3 +31,4 @@ class Project(Base):
     categories: str
     story:Optional[str]=Field(default =None)
     user_id : ObjectId
+    backers: List[Backers]=Field(default_factory =list)

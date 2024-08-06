@@ -34,4 +34,4 @@ class User(Base):
     is_superuser: bool = Field(default=True)
     refresh_tokens: list[ObjectId] = Field(default_factory=list)
     verification_pin: str = Field(default=None)
-
+    project_backed: List[ObjectId] = Field(default_factory=list)
