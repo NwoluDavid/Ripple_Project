@@ -25,10 +25,10 @@ class ProjectCreate(BaseModel):
     duration: Optional[datetime] =Field(default_factory=datetime_now_sec)
     title: str=Field(default =None , description = "The user states the title of the project",example ="Electric Motor", min_length =8, max_length =64)
     about: Optional[str]=Field(default =None , description = "The user states what their kickstarted is about",example ="JohnDoe", min_length =8, max_length =600)
-    # photo_or_video: Optional[str] =Field(default =None , description = "The name of the video or image file provided by the user",example ="JohnDoe.jpg", min_length =8, max_length =64)
     categories: str=Field(default =None , description = "The user add the categories of his/her project",example ="Design $ tech", max_length =24)
     story: Optional[str]=Field(default =None , description = "user shares the story of the project",example ="user story", min_length =8, max_length =1000)
     backers:List[Backers] =Field(default_factory =list)
+
 
 class Projectin(ProjectCreate):
     id: Optional[ObjectId]=None
@@ -61,3 +61,4 @@ class ProjectOut(BaseModel):
     categories: Optional[str] = Field(default = None)
     story: Optional[str] = Field(default = None)
     user_id: Optional[str] = Field(default = None)
+    featured:Optional[bool]=Field(default =False)

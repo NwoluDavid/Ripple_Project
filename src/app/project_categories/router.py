@@ -1,5 +1,3 @@
-# file: router.py
-
 from typing import List
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException
@@ -26,7 +24,6 @@ async def create_project_category(
 ):
     try:
         project_category = await procat.create_project_category(db=db, obj_in=project_in)
-        # project_category =jsonable_encoder(project_category)
         return JSONResponse(status_code=200, content={
             "status": "success",
             "message": "Project category created successfully",
