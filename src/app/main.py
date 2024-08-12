@@ -4,6 +4,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.auth.router import router as auth_router
 from app.user.router import router as user_router
 from app.project_categories.router import router as procat_router
+from app.featured.router import router as featured_router
 from app.project.router import router as project_router
 from app.payment.router import router as payment_router
 from app.config import settings
@@ -51,6 +52,7 @@ app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(user_router, prefix=settings.API_V1_STR)
 app.include_router(procat_router, prefix=settings.API_V1_STR)
+app.include_router(featured_router, prefix=settings.API_V1_STR)
 app.include_router(project_router, prefix=settings.API_V1_STR)
 app.include_router(payment_router, prefix=settings.API_V1_STR)
 
