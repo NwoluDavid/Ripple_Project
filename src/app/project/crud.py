@@ -183,5 +183,24 @@ class CRUDProject(CRUDBase[Project, ProjectCreate, ProjectUpdate]):
         project["id"] = str(project["_id"])
         del project["_id"]
         return Project(**project)
+    
+    async def get_number_of_projects(self, db: AgnosticDatabase) -> int:
+        project_collection = db.project
+        result = project_collection.find()
+        project_list = []
 
+        async for document in result:
+            project_list.append(document)
+            number_of_projects =len(project_list)
+        return number_of_projects
+    
+    async def get_number_of_backings(self, db: AgnosticDatabase) -> int:
+        project_collection = db.project
+        result = project_collection.find()
+        project_list = []
+        async for document in result:
+            project_list.append(document["backer"])
+            number_of_backing =len(project_list)
+        return number_of_backing
+     
 proj = CRUDProject(Project)

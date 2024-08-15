@@ -103,21 +103,18 @@ async def verify_transaction(reference: str , db:AgnosticDatabase=Depends(get_db
             raise HTTPException(status_code=response.status_code, detail="Transaction verification failed")
         
         event = response.json()
-        pprint.pprint(event)
         
         # return response.json()
 
         if event['data']["status"] =="success":
-            transaction_reference = event['data']['reference']
-            user_email = event['data']['customer']['email']
-            amount = event['data']['amount'] // 100  # Amount is in kobo
+            # transaction_reference = event['data']['reference']
+            # user_email = event['data']['customer']['email']
+            # amount = event['data']['amount'] // 100  # Amount is in kobo
             
-            # Extract project ID from reference
-            project_id = transaction_reference.split('-')[0]
-            print(project_id)
-            
-            await payment.update_user_with_project(db, user_email, project_id)
-            await payment.update_project_with_backer(db, project_id, user_email, amount)
+            # # Extract project ID from reference
+            # project_id = transaction_reference.split('-')[0]
+            # await payment.update_user_with_project(db, user_email, project_id)
+            # await payment.update_project_with_backer(db, project_id, user_email, amount)
             return {"status": "success"}
         else:
             raise HTTPException(status_code=400, detials ="this transaction was not successful")

@@ -35,10 +35,12 @@ class CRUDPayment(CRUDBase[Payment, PaymentCreate, PaymentUpdate]):
         user_collection =db.user
         user = await user_collection.find_one({"email":user_email})
         if user:
-            document ={"_id":ObjectId(user["_id"])}
-            update ={"$push":{"project_backed":ObjectId(project_id)}}
-            result = await user_collection.update_one(document,update)
-            print(result.modified_count)
+            for projects in user["project_backed"]:
+                if project_id != projects:
+                    document ={"_id":ObjectId(user["_id"])}
+                    update ={"$push":{"project_backed":ObjectId(project_id)}}
+                    result = await user_collection.update_one(document,update)
+                    
         return result.modified_count
             
     async def update_project_with_backer(self,db:AgnosticDatabase, project_id: str, user_email: str, amount: int):
@@ -54,7 +56,6 @@ class CRUDPayment(CRUDBase[Payment, PaymentCreate, PaymentUpdate]):
             backer =backer.dict()
             update = {"$push":{"backers":backer}}
             result = await project_collection.update_one(document,update)
-            print(result.modified_count)
         return result.modified_count
            
 payment =CRUDPayment(Payment)
