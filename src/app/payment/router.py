@@ -103,21 +103,24 @@ async def verify_transaction(reference: str , db:AgnosticDatabase=Depends(get_db
             raise HTTPException(status_code=response.status_code, detail="Transaction verification failed")
         
         event = response.json()
-        
-        # return response.json()
-
+        transaction_reference = event['data']['reference']
+        status=event['data']["status"]
+        paid_at=event['data']["paid_at"]
         if event['data']["status"] =="success":
             # transaction_reference = event['data']['reference']
+            # status=event['data']["status"]
             # user_email = event['data']['customer']['email']
             # amount = event['data']['amount'] // 100  # Amount is in kobo
             
-            # # Extract project ID from reference
+            # Extract project ID from reference
             # project_id = transaction_reference.split('-')[0]
             # await payment.update_user_with_project(db, user_email, project_id)
             # await payment.update_project_with_backer(db, project_id, user_email, amount)
+            await payment.update_payment_status(db,transaction_reference,status,paid_at)
             return {"status": "success"}
         else:
-            raise HTTPException(status_code=400, detials ="this transaction was not successful")
+            await payment.update_payment_status(db,transaction_reference,status,paid_at)
+            raise HTTPException(status_code=400, detail ="this transaction was not successful")
     except Exception as e:
         return JSONResponse(status_code=500, content={
             "status": "error",
@@ -143,9 +146,10 @@ async def paystack_webhook(request: Request, db: AgnosticDatabase = Depends(get_
             raise HTTPException(status_code=400, detail="Invalid signature")
         
         event = json.loads(payload)
-        
+        transaction_reference = event['data']['reference']
+        status=event['data']["status"]
+        paid_at=event['data']["paid_at"]
         if event['event'] == 'charge.success':
-            transaction_reference = event['data']['reference']
             user_email = event['data']['customer']['email']
             amount = event['data']['amount'] // 100  # Amount is in kobo
             
@@ -154,10 +158,11 @@ async def paystack_webhook(request: Request, db: AgnosticDatabase = Depends(get_
             
             await payment.update_user_with_project(db, user_email, project_id)
             await payment.update_project_with_backer(db, project_id, user_email, amount)
-            
+            await payment.update_payment_status(db,transaction_reference,status,paid_at)
             return {"status": "success"}
-        
-        return {"status": "ignored"}
+        else:
+            await payment.update_payment_status(db,transaction_reference,status,paid_at)
+            raise HTTPException(status_code=400, detail ="this transaction was not successful")
     except Exception as e:
         return JSONResponse(status_code=400, content={
             "status": "error",

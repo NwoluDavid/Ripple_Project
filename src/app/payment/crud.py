@@ -9,6 +9,7 @@ from app.payment.models import  Payment
 from app.project.models import Backers
 from app.payment.schemas import PaymentCreate,PaymentUpdate
 from app.config import settings
+import pprint
 
 
 
@@ -57,5 +58,17 @@ class CRUDPayment(CRUDBase[Payment, PaymentCreate, PaymentUpdate]):
             update = {"$push":{"backers":backer}}
             await project_collection.update_one(document,update)
     
+    async def update_payment_status(
+        self, db: AgnosticDatabase,
+        transaction_reference:str,
+        status:str,
+        paid_at:str
+    ):
+        payment_collection =db.payment
+        payment_data=await payment_collection.find_one({"reference":transaction_reference})
+        document ={"_id":payment_data["_id"]}
+        update ={"$set":{"status":status,"paid_at":paid_at}}
+        await payment_collection.update_one(document,update)
+
            
 payment =CRUDPayment(Payment)

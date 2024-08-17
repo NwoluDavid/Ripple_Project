@@ -62,8 +62,6 @@ async def create_project(
             picture_or_video =picture_or_video.filename if picture_or_video else None
         )
         
-        print(project_in)
-        
         project_id= await proj.create_project(db,user,project_in, picture_bytes)
         project_id=jsonable_encoder(project_id)
         return JSONResponse(status_code=201, content={
@@ -315,7 +313,6 @@ async def update_about_project(
 async def update_project_catagory(
     project_id: str = Query(description="the project ID", max_length=24),
     category_id: str =Query(description="the category id", max_length=24),
-    # user:User =Depends(get_current_active_user),
     db: AgnosticDatabase=Depends(get_db)
 ):
     """This route updates the category field of a project, 
