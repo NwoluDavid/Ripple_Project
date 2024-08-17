@@ -8,6 +8,7 @@ from app.project.schemas import ProjectCreate, ProjectUpdate, ProjectOut
 from app.user.models import User
 import uuid
 import os
+import pprint
 
 UPLOAD_DIRECTORY = "./uploads"
 if not os.path.exists(UPLOAD_DIRECTORY):
@@ -35,13 +36,12 @@ class CRUDProject(CRUDBase[Project, ProjectCreate, ProjectUpdate]):
         project_collection = db.project
         result = project_collection.find()
         project_list = []
-
+        count =0
         async for document in result:
             document["id"] = str(document["_id"])
             del document["_id"]
             document["user_id"] = str(document["user_id"])
             project_list.append(ProjectOut(**document))
-
         return project_list    
 
     async def get_project(self, db: AgnosticDatabase, project_id: str) -> Project:
@@ -183,5 +183,25 @@ class CRUDProject(CRUDBase[Project, ProjectCreate, ProjectUpdate]):
         project["id"] = str(project["_id"])
         del project["_id"]
         return Project(**project)
+    
+    async def get_number_of_projects(self, db: AgnosticDatabase) -> int:
+        project_collection = db.project
+        result = project_collection.find()
+        project_list = []
 
+        async for document in result:
+            project_list.append(document)
+            number_of_projects =len(project_list)
+        return number_of_projects
+    
+    async def get_number_of_backings(self, db: AgnosticDatabase) -> int:
+        project_collection = db.project
+        cursor = project_collection.find({"backers": {"$exists": True, "$not": {"$size": 0}}})
+        number_of_backings = 0
+
+        async for document in cursor:
+            number_of_backings += sum(1 for _ in document.get("backers", []))
+
+        return number_of_backings
+     
 proj = CRUDProject(Project)

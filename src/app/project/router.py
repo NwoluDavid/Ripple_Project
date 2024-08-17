@@ -113,7 +113,31 @@ async def list_projects(
             "status": "error",
             "message": str(e),
             "data": None
+        })     
+        
+        
+@router.get("/number-of-porjects")
+async def number_of_projects(
+    db: AgnosticDatabase = Depends(get_db),
+)->int:
+    """_summary_
+        this route gives your the number of projects created.
+    """
+    try:
+        
+        num_of_projects = await proj.get_number_of_projects(db)
+        return JSONResponse(status_code=200, content={
+            "status": "success",
+            "message": "The number of projects created is:",
+            "data": num_of_projects
+        })
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            "status": "error",
+            "message": str(e),
+            "data": None
         })        
+           
         
 @router.get("/{project_id}", response_model=ProjectOut)
 async def read_project(
@@ -313,7 +337,28 @@ async def filter_projects_by_category(
             "status": "error",
             "message": str(e),
             "data": None
-        })                                                                                                            
+        })
+        
+ 
+@router.get("/projects/backings")
+async def get_project_backing(
+    db: AgnosticDatabase = Depends(get_db),
+)->int:
+    """Retrieve the total number of backings received by all the projects."""
+    # try:
+    project_backing = await proj.get_number_of_backings(db)
+    return JSONResponse(status_code=200, content={
+        "status": "success",
+        "message": "Projects received a total backing of:",
+        "data": project_backing
+    })
+    # except Exception as e:
+    #     return JSONResponse(status_code=500, content={
+    #         "status": "error",
+    #         "message": str(e),
+    #         "data": None
+    #     })                                                                                                            
+
 
 @router.get("/project/{project_id}", response_model=ProjectOut)
 async def get_user_projects(
