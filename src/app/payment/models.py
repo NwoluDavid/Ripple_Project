@@ -16,4 +16,4 @@ class Payment(Base):
     email: EmailStr
     amount: int
     reference: str = Field(description="Unique reference ID")
-    project_id: str = Field(description="Project ID")
+    project_id: str = Field(description="Project ID",max_length =24)
